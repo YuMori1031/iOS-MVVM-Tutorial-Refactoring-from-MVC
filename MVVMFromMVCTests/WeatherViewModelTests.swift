@@ -1,4 +1,4 @@
-/// Copyright (c) 2019 Razeware LLC
+/// Copyright (c) 2023 Razeware LLC
 /// 
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
@@ -18,6 +18,10 @@
 /// merger, publication, distribution, sublicensing, creation of derivative works,
 /// or sale is expressly withheld.
 /// 
+/// This project and source code may use libraries or frameworks that are
+/// released under various Open-Source licenses. Use of those libraries and
+/// frameworks are governed by their own individual licenses.
+///
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,19 +33,26 @@
 import XCTest
 @testable import Grados
 
-class LocationGeocoderTests: XCTestCase {
-  var geocoder = LocationGeocoder()
+class WeatherViewModelTests: XCTestCase {
 
-  func testGeocodingRazewareHeadquarters() {
-    let expectation = self.expectation(description: "Geocoding Results")
-
-    geocoder.geocode(addressString: "McGaheysville, VA") { (locations: [Location])  in
-      print(locations)
-      XCTAssertEqual(locations.count, 1)
-      XCTAssertEqual(locations.first!.name, "McGaheysville, VA")
-      expectation.fulfill()
+  func testChangeLocationUpdatesLocationName() {
+    // 1
+    let expectation = self.expectation(
+      description: "Find location using geocoder")
+    // 2
+    let viewModel = WeatherViewModel()
+    // 3
+    viewModel.locationName.bind {
+      if $0.caseInsensitiveCompare("Richmond, VA") == .orderedSame {
+        expectation.fulfill()
+      }
     }
-
-    waitForExpectations(timeout: 5, handler: nil)
+    // 4
+    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+      viewModel.changeLocation(to: "Richmond, VA")
+    }
+    // 5
+    waitForExpectations(timeout: 8, handler: nil)
   }
+
 }

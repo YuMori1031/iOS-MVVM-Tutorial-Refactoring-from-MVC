@@ -1,4 +1,4 @@
-/// Copyright (c) 2019 Razeware LLC
+/// Copyright (c) 2023 Razeware LLC
 /// 
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
@@ -18,6 +18,10 @@
 /// merger, publication, distribution, sublicensing, creation of derivative works,
 /// or sale is expressly withheld.
 /// 
+/// This project and source code may use libraries or frameworks that are
+/// released under various Open-Source licenses. Use of those libraries and
+/// frameworks are governed by their own individual licenses.
+///
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,22 +30,29 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import XCTest
-@testable import Grados
+import Foundation
 
-class LocationGeocoderTests: XCTestCase {
-  var geocoder = LocationGeocoder()
+/// finalのキーワードがついたクラスは継承できない。基本的に継承しないクラスは宣言した方が良さそう
+/// <T>:ジェネリクス。引数や返り値の型が実行時に（型推論で）決定される。
 
-  func testGeocodingRazewareHeadquarters() {
-    let expectation = self.expectation(description: "Geocoding Results")
-
-    geocoder.geocode(addressString: "McGaheysville, VA") { (locations: [Location])  in
-      print(locations)
-      XCTAssertEqual(locations.count, 1)
-      XCTAssertEqual(locations.first!.name, "McGaheysville, VA")
-      expectation.fulfill()
+/// 入力された値が変更された際に通知するクラス。
+final class Box<T> {
+  /// Listener型を新たにtypealiasで定義。実体は引数<T>を設定、返り値はなし。
+  typealias Listener = (T) -> Void
+  var listener: Listener?
+  /// 変数valueの型を引数<T>に設定。didSetで変数valueの変更直後に値を更新
+  var value: T {
+    didSet {
+      listener?(value)
     }
-
-    waitForExpectations(timeout: 5, handler: nil)
+  }
+  /// 変数valueの初期化処理
+  init(_ value: T) {
+    self.value = value
+  }
+  /// 更新した値を適用
+  func bind(listener: Listener?) {
+    self.listener = listener
+    listener?(value)
   }
 }
