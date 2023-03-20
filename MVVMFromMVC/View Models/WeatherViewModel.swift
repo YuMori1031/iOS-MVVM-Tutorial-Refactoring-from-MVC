@@ -31,10 +31,9 @@
 /// THE SOFTWARE.
 
 import Foundation
-// 1
 import UIKit.UIImage
+import RxCocoa
 
-// 2
 public class WeatherViewModel {
   private let dateFormatter: DateFormatter = {
     let dateFormatter = DateFormatter()
@@ -50,17 +49,37 @@ public class WeatherViewModel {
   
   private static let defaultAddress = "McGaheysville, VA"
   private let geocoder = LocationGeocoder()
-  let locationName = Box("Loading...")
-  let date = Box(" ")
-  let icon: Box<UIImage?> = Box(nil)  //no image initially
-  let summary = Box(" ")
-  let forecastSummary = Box(" ")
+  let locationName = BehaviorRelay<String>(value: "Loading...")
+  let date = PublishRelay<String>()
+  let icon = PublishRelay<UIImage>()
+  let summary = PublishRelay<String>()
+  let forecastSummary = PublishRelay<String>()
+  
+  //let locationName = Box("Loading...")
+  //let date = Box(" ")
+  //let icon: Box<UIImage?> = Box(nil)  //no image initially
+  //let summary = Box(" ")
+  //let forecastSummary = Box(" ")
   
   init() {
     changeLocation(to: Self.defaultAddress)
   }
   
   func changeLocation(to newLocation: String) {
+    geocoder.geocode(addressString: newLocation) { [weak self] locations in
+      guard let self = self else { return }
+      if let location = locations.first {
+        self.locationName.accept(location.name)
+        self.fetchWeatherForLocation(location)
+        return
+      }
+      self.locationName.accept("Not found")
+      self.date.accept("")
+      self.icon.accept(UIImage())
+      self.summary.accept("")
+      self.forecastSummary.accept("")
+    }
+    /*
     locationName.value = "Loading..."
     geocoder.geocode(addressString: newLocation) { [weak self] locations in
       guard let self = self else { return }
@@ -75,16 +94,17 @@ public class WeatherViewModel {
       self.summary.value = ""
       self.forecastSummary.value = ""
     }
+    */
   }
 
   private func fetchWeatherForLocation(_ location: Location) {
     WeatherbitService.weatherDataForLocation(latitude: location.latitude, longitude: location.longitude) { [weak self] (weatherData, error) in
       guard let self = self, let weatherData = weatherData else { return }
-      self.date.value = self.dateFormatter.string(from: weatherData.date)
-      self.icon.value = UIImage(named: weatherData.iconName)
+      self.date.accept(self.dateFormatter.string(from: weatherData.date))
+      self.icon.accept(UIImage(named: weatherData.iconName)!)
       let temp = self.tempFormatter.string(from: weatherData.currentTemp as NSNumber) ?? ""
-      self.summary.value = "\(weatherData.description) - \(temp)℉"
-      self.forecastSummary.value = "\nSummary: \(weatherData.description)"
+      self.summary.accept("\(weatherData.description) - \(temp)℉")
+      self.forecastSummary.accept("\nSummary: \(weatherData.description)")
     }
   }
 }

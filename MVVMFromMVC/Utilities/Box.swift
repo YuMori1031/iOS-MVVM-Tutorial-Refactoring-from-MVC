@@ -33,26 +33,29 @@
 import Foundation
 
 /// finalのキーワードがついたクラスは継承できない。基本的に継承しないクラスは宣言した方が良さそう
-/// <T>:ジェネリクス。引数や返り値の型が実行時に（型推論で）決定される。
+/// <T>:ジェネリクス。特定の型に依存させないために使用。引数や返り値の型がコンパイル時に決定される。
 
 /// 入力された値が変更された際に通知するクラス。
-final class Box<T> {
-  /// Listener型を新たにtypealiasで定義。実体は引数<T>を設定、返り値はなし。
-  typealias Listener = (T) -> Void
-  var listener: Listener?
-  /// 変数valueの型を引数<T>に設定。didSetで変数valueの変更直後に値を更新
-  var value: T {
-    didSet {
-      listener?(value)
-    }
-  }
-  /// 変数valueの初期化処理
-  init(_ value: T) {
-    self.value = value
-  }
-  /// 更新した値を適用
-  func bind(listener: Listener?) {
-    self.listener = listener
-    listener?(value)
-  }
-}
+
+/*
+ final class Box<T> {
+ /// Listener型を新たにtypealiasで定義。実体は引数<T>を設定、返り値はなし。
+ typealias Listener = (T) -> Void
+ var listener: Listener?
+ /// 変数valueの型を引数<T>に設定。didSetで変数valueの変更直後に値を更新
+ var value: T {
+ didSet {
+ listener?(value)
+ }
+ }
+ /// 変数valueの初期化処理
+ init(_ value: T) {
+ self.value = value
+ }
+ /// 更新した値を適用
+ func bind(listener: Listener?) {
+ self.listener = listener
+ listener?(value)
+ }
+ }
+ */
