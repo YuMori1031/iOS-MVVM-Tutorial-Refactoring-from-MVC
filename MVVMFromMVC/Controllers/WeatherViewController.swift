@@ -42,6 +42,27 @@ class WeatherViewController: UIViewController {
   @IBOutlet weak var forecastSummary: UITextView!
   
   override func viewDidLoad() {
+    viewModel.locationName
+      .bind(to: cityLabel.rx.text)
+      .disposed(by: disposeBag)
+    
+    viewModel.date
+      .bind(to: dateLabel.rx.text)
+      .disposed(by: disposeBag)
+    
+    viewModel.icon
+      .bind(to: currentIcon.rx.image)
+      .disposed(by: disposeBag)
+    
+    viewModel.summary
+      .bind(to: currentSummaryLabel.rx.text)
+      .disposed(by: disposeBag)
+    
+    viewModel.forecastSummary
+      .bind(to: forecastSummary.rx.text)
+      .disposed(by: disposeBag)
+    
+    /*
     viewModel.locationName.subscribe(onNext: { [weak self] city in
       self?.cityLabel.text = city
     }).disposed(by: disposeBag)
@@ -61,6 +82,7 @@ class WeatherViewController: UIViewController {
     viewModel.forecastSummary.subscribe(onNext: { [weak self] forecastsummary in
       self?.forecastSummary.text = forecastsummary
     }).disposed(by: disposeBag)
+    */
     
     /*
     viewModel.locationName.bind { [weak self] locationName in
