@@ -50,9 +50,15 @@ class WeatherViewController: UIViewController {
       .bind(to: dateLabel.rx.text)
       .disposed(by: disposeBag)
     
+    viewModel.icon.subscribe(onNext: { [weak self] icon in
+      self?.currentIcon.image = UIImage(named: icon)
+    }).disposed(by: disposeBag)
+    
+    /*
     viewModel.icon
       .bind(to: currentIcon.rx.image)
       .disposed(by: disposeBag)
+    */
     
     viewModel.summary
       .bind(to: currentSummaryLabel.rx.text)

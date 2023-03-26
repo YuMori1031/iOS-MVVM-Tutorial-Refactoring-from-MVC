@@ -31,7 +31,7 @@
 /// THE SOFTWARE.
 
 import Foundation
-import UIKit.UIImage
+//import UIKit.UIImage
 import RxCocoa
 
 public class WeatherViewModel {
@@ -51,7 +51,8 @@ public class WeatherViewModel {
   private let geocoder = LocationGeocoder()
   let locationName = BehaviorRelay<String>(value: "Loading...")
   let date = PublishRelay<String>()
-  let icon = PublishRelay<UIImage>()
+  let icon = BehaviorRelay<String>(value: "")
+  //let icon = PublishRelay<UIImage>()
   let summary = PublishRelay<String>()
   let forecastSummary = PublishRelay<String>()
   
@@ -75,7 +76,7 @@ public class WeatherViewModel {
       }
       self.locationName.accept("Not found")
       self.date.accept("")
-      self.icon.accept(UIImage())
+      self.icon.accept("")
       self.summary.accept("")
       self.forecastSummary.accept("")
     }
@@ -101,7 +102,7 @@ public class WeatherViewModel {
     WeatherbitService.weatherDataForLocation(latitude: location.latitude, longitude: location.longitude) { [weak self] (weatherData, error) in
       guard let self = self, let weatherData = weatherData else { return }
       self.date.accept(self.dateFormatter.string(from: weatherData.date))
-      self.icon.accept(UIImage(named: weatherData.iconName)!)
+      self.icon.accept(weatherData.iconName)
       let temp = self.tempFormatter.string(from: weatherData.currentTemp as NSNumber) ?? ""
       self.summary.accept("\(weatherData.description) - \(temp)℉")
       self.forecastSummary.accept("\nSummary: \(weatherData.description)")
