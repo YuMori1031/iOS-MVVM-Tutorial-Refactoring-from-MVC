@@ -30,7 +30,6 @@ import UIKit
 import RxSwift
 
 class WeatherViewController: UIViewController {
-  private let geocoder = LocationGeocoder()
   private let viewModel = WeatherViewModel()
   
   private let disposeBag = DisposeBag()
@@ -50,15 +49,10 @@ class WeatherViewController: UIViewController {
       .bind(to: dateLabel.rx.text)
       .disposed(by: disposeBag)
     
-    viewModel.icon.subscribe(onNext: { [weak self] icon in
-      self?.currentIcon.image = UIImage(named: icon)
-    }).disposed(by: disposeBag)
-    
-    /*
     viewModel.icon
+      .map { UIImage(named: $0) }
       .bind(to: currentIcon.rx.image)
       .disposed(by: disposeBag)
-    */
     
     viewModel.summary
       .bind(to: currentSummaryLabel.rx.text)
@@ -67,50 +61,6 @@ class WeatherViewController: UIViewController {
     viewModel.forecastSummary
       .bind(to: forecastSummary.rx.text)
       .disposed(by: disposeBag)
-    
-    /*
-    viewModel.locationName.subscribe(onNext: { [weak self] city in
-      self?.cityLabel.text = city
-    }).disposed(by: disposeBag)
-    
-    viewModel.date.subscribe(onNext: { [weak self] date in
-      self?.dateLabel.text = date
-    }).disposed(by: disposeBag)
-    
-    viewModel.icon.subscribe(onNext: { [weak self] icon in
-      self?.currentIcon.image = icon
-    }).disposed(by: disposeBag)
-    
-    viewModel.summary.subscribe(onNext: { [weak self] summary in
-      self?.currentSummaryLabel.text = summary
-    }).disposed(by: disposeBag)
-    
-    viewModel.forecastSummary.subscribe(onNext: { [weak self] forecastsummary in
-      self?.forecastSummary.text = forecastsummary
-    }).disposed(by: disposeBag)
-    */
-    
-    /*
-    viewModel.locationName.bind { [weak self] locationName in
-      self?.cityLabel.text = locationName
-    }
-    
-    viewModel.date.bind { [weak self] date in
-      self?.dateLabel.text = date
-    }
-    
-    viewModel.icon.bind { [weak self] image in
-      self?.currentIcon.image = image
-    }
-    
-    viewModel.summary.bind { [weak self] summary in
-      self?.currentSummaryLabel.text = summary
-    }
-    
-    viewModel.forecastSummary.bind { [weak self] forecast in
-      self?.forecastSummary.text = forecast
-    }
-    */
   }
   
   @IBAction func promptForLocation(_ sender: Any) {

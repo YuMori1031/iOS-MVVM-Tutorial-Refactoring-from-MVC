@@ -31,7 +31,6 @@
 /// THE SOFTWARE.
 
 import Foundation
-//import UIKit.UIImage
 import RxCocoa
 
 public class WeatherViewModel {
@@ -52,15 +51,8 @@ public class WeatherViewModel {
   let locationName = BehaviorRelay<String>(value: "Loading...")
   let date = PublishRelay<String>()
   let icon = BehaviorRelay<String>(value: "")
-  //let icon = PublishRelay<UIImage>()
   let summary = PublishRelay<String>()
   let forecastSummary = PublishRelay<String>()
-  
-  //let locationName = Box("Loading...")
-  //let date = Box(" ")
-  //let icon: Box<UIImage?> = Box(nil)  //no image initially
-  //let summary = Box(" ")
-  //let forecastSummary = Box(" ")
   
   init() {
     changeLocation(to: Self.defaultAddress)
@@ -80,22 +72,6 @@ public class WeatherViewModel {
       self.summary.accept("")
       self.forecastSummary.accept("")
     }
-    /*
-    locationName.value = "Loading..."
-    geocoder.geocode(addressString: newLocation) { [weak self] locations in
-      guard let self = self else { return }
-      if let location = locations.first {
-        self.locationName.value = location.name
-        self.fetchWeatherForLocation(location)
-        return
-      }
-      self.locationName.value = "Not found"
-      self.date.value = ""
-      self.icon.value = nil
-      self.summary.value = ""
-      self.forecastSummary.value = ""
-    }
-    */
   }
 
   private func fetchWeatherForLocation(_ location: Location) {
